@@ -65,7 +65,9 @@ Operator settings `MAX_PDF_BYTES` and `MAX_PDF_PAGES` bound document work. Overs
 - Reprocess affected windows after bumping the extraction version. Old citations and revisions remain addressable. The scheduled window is bounded to a delayed-minutes lookback and a future calendar window. Use explicit backfills for earlier corrections.
 - Track the ratio of unsupported layouts and unverified outcomes by government body. The checked-in reference evaluation is a small regression benchmark.
 - Browser watch identities are single-device. Notification delivery is the in-app inbox. The API uses secure cookie configuration for HTTPS deployments.
-- The optional transcription command accepts a locally available public recording and the official record URL publishing it. Its timecoded JSON stays in the local archive for review. The demo PDFs and meetings do not depend on recordings.
+## Optional transcription
+
+The transcription command accepts a locally available public recording and the official record URL publishing it. Its timecoded JSON stays in the local archive for review. The demo PDFs and meetings do not depend on recordings.
 
 \`\`\`sh
 python -m pip install -e ".[audio]"

@@ -119,12 +119,12 @@
   ],
   "processing_ms": {
     "per_document": [
-      155,
-      295,
-      81,
-      174
+      152,
+      291,
+      80,
+      175
     ],
-    "median": 164.5
+    "median": 163.5
   },
   "external_model_cost_usd": 0
 }

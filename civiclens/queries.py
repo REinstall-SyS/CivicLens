@@ -79,7 +79,7 @@ def search(session, filters: Filters, embedding_model: str | None = None):
     if filters.end:
         conditions.append(Meeting.starts_at < date_start(filters.end + timedelta(days=1)))
     base = select(Item.id).join(Meeting, Meeting.key == Item.meeting_key).where(*conditions)
-    recent = (desc(Meeting.starts_at), Item.id)
+    recent = (desc(Meeting.starts_at), Item.official_id, Item.title, Item.id)
     if not filters.q:
         return session.scalars(base.order_by(*recent).limit(filters.limit)).all()
 
@@ -89,18 +89,23 @@ def search(session, filters: Filters, embedding_model: str | None = None):
     id_query = re.fullmatch(r"20\d{2}-\d{3,5}", filters.q)
     if id_query:
         return session.scalars(base.where(Item.official_id == filters.q).order_by(*recent).limit(filters.limit)).all()
+    has_proposal = exists(select(ItemEvent.id).join(Document).join(SourceDocument).where(
+        ItemEvent.item_id == Item.id, ItemEvent.suppressed.is_(False),
+        SourceDocument.kind.in_([Kind.agenda, Kind.notice])
+    ))
+    relevance_ties = (has_proposal.desc(), *recent)
     if dialect == "postgresql":
         vector = func.to_tsvector(ENGLISH, Item.search_text)
         query = func.to_tsquery(ENGLISH, " | ".join(terms))
         phrase = func.plainto_tsquery(ENGLISH, " ".join(terms))
         rank = func.ts_rank_cd(vector, query) + 2 * func.ts_rank_cd(vector, phrase)
-        lexical = session.scalars(base.where(vector.op("@@")(query)).order_by(rank.desc(), *recent)
+        lexical = session.scalars(base.where(vector.op("@@")(query)).order_by(rank.desc(), *relevance_ties)
                                   .limit(120)).all()
     else:
         from sqlalchemy import case
         matches = [Item.search_text.icontains(term, autoescape=True) for term in terms]
         points = sum(case((match, 1), else_=0) for match in matches)
-        lexical = session.scalars(base.where(or_(*matches)).order_by(points.desc(), *recent).limit(120)).all()
+        lexical = session.scalars(base.where(or_(*matches)).order_by(points.desc(), *relevance_ties).limit(120)).all()
     if dialect != "postgresql" or not embedding_model:
         return lexical[:filters.limit]
     try:
@@ -110,7 +115,7 @@ def search(session, filters: Filters, embedding_model: str | None = None):
     distance = cast(Item.embedding, Vector(384)).cosine_distance(query_vector)
     semantic = session.scalars(base.where(Item.embedding_model == embedding_model,
                                          Item.embedding.is_not(None), distance < 0.67)
-                               .order_by(distance, Item.id).limit(120)).all()
+                               .order_by(distance, *relevance_ties).limit(120)).all()
     ranks = {}
     for weight, ids in [(1.0, lexical), (0.75, semantic)]:
         for index, item in enumerate(ids, 1):
