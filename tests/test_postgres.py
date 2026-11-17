@@ -1,3 +1,4 @@
+from io import StringIO
 import os
 
 from alembic import command
@@ -40,5 +41,17 @@ def test_postgres_migrations_search_and_pgvector(monkeypatch, tmp_path):
             monkeypatch.setattr("civiclens.queries.embeddings",
                                 lambda terms, model: {terms[0]: [1.0] + [0.0] * 383})
             assert search(session, Filters(q="infrastructure"), "test-model") == [key]
+    finally:
+        settings.cache_clear()
+
+def test_offline_postgres_migration_creates_vector_before_tables(monkeypatch):
+    monkeypatch.setenv("DATABASE_URL", "postgresql+psycopg://civic:test@localhost/civic")
+    settings.cache_clear()
+    try:
+        output = StringIO()
+        command.upgrade(Config("alembic.ini", output_buffer=output), "head", sql=True)
+        sql = output.getvalue().lower()
+        assert sql.index("create extension if not exists vector") < sql.index("embedding vector(384)")
+        assert "using gin" in sql and "using hnsw" in sql
     finally:
         settings.cache_clear()
