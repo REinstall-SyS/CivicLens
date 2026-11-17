@@ -1,0 +1,252 @@
+{
+  "description": "Manually checked examples from the July 21 and August 4, 2026 City Council PDFs. Page numbers are physical PDF pages.",
+  "meetings": [
+    {
+      "id": 1611,
+      "date": "2026-07-21T17:00:00-05:00",
+      "agenda": 4494,
+      "minutes": 4527,
+      "items": [
+        {
+          "id": "2026-560",
+          "agenda_page": 1,
+          "state": "approved",
+          "decision_page": 4,
+          "vote": [
+            5,
+            0
+          ],
+          "amounts": []
+        },
+        {
+          "id": "2026-535",
+          "agenda_page": 1,
+          "state": "approved",
+          "decision_page": 4,
+          "vote": [
+            5,
+            0
+          ],
+          "amounts": []
+        },
+        {
+          "id": "2026-609",
+          "agenda_page": 1,
+          "state": "approved",
+          "decision_page": 5,
+          "vote": [
+            5,
+            0
+          ],
+          "amounts": [
+            "15940000.00"
+          ]
+        },
+        {
+          "id": "2026-614",
+          "agenda_page": 2,
+          "state": "approved",
+          "decision_page": 7,
+          "vote": [
+            5,
+            0
+          ],
+          "amounts": [
+            "9500.00"
+          ]
+        },
+        {
+          "id": "2026-615",
+          "agenda_page": 2,
+          "state": "approved",
+          "decision_page": 7,
+          "vote": [
+            5,
+            0
+          ],
+          "amounts": [
+            "3256.00"
+          ]
+        },
+        {
+          "id": "2026-597",
+          "agenda_page": 3,
+          "state": "approved",
+          "decision_page": 10,
+          "vote": [
+            5,
+            0
+          ],
+          "amounts": [
+            "10000.00"
+          ]
+        },
+        {
+          "id": "2026-610",
+          "agenda_page": 3,
+          "state": "approved",
+          "decision_page": 10,
+          "vote": [
+            5,
+            0
+          ],
+          "amounts": [
+            "115395.00"
+          ]
+        },
+        {
+          "id": "2026-621",
+          "agenda_page": 4,
+          "state": "unknown",
+          "amounts": [],
+          "note": "Routine agenda item; item-level vote absent."
+        },
+        {
+          "id": "2026-626",
+          "agenda_page": 4,
+          "state": "unknown",
+          "amounts": [],
+          "note": "Budget presentation; no item-level decision."
+        }
+      ],
+      "sha256": {
+        "agenda": "d3071b22595e99e308567df087bcdb8f23007f2f5208da4525ff4dabbbe1b292",
+        "minutes": "f48967df9b827d9e832278e97ce26177455047c99126a28e1df1d7e35b061555"
+      }
+    },
+    {
+      "id": 1614,
+      "date": "2026-08-04T17:00:00-05:00",
+      "agenda": 4518,
+      "minutes": 4583,
+      "items": [
+        {
+          "id": "2026-635",
+          "agenda_page": 1,
+          "state": "approved",
+          "decision_page": 3,
+          "vote": [
+            5,
+            0
+          ],
+          "amounts": []
+        },
+        {
+          "id": "2026-645",
+          "agenda_page": 1,
+          "state": "approved",
+          "decision_page": 4,
+          "vote": [
+            5,
+            0
+          ],
+          "amounts": []
+        },
+        {
+          "id": "2026-647",
+          "agenda_page": 1,
+          "state": "approved",
+          "decision_page": 4,
+          "vote": [
+            5,
+            0
+          ],
+          "amounts": [
+            "9.80"
+          ]
+        },
+        {
+          "id": "2026-641",
+          "agenda_page": 1,
+          "state": "approved",
+          "decision_page": 4,
+          "vote": [
+            5,
+            0
+          ],
+          "amounts": [
+            "7041513.71"
+          ]
+        },
+        {
+          "id": "2026-622",
+          "minutes_id": "2026-621",
+          "agenda_page": 2,
+          "state": "approved",
+          "decision_page": 6,
+          "vote": [
+            5,
+            0
+          ],
+          "amounts": [
+            "385909.00"
+          ],
+          "note": "The minutes text layer reads 2026-621, a different identifier from the agenda."
+        },
+        {
+          "id": "2026-631",
+          "agenda_page": 2,
+          "state": "approved",
+          "decision_page": 6,
+          "vote": [
+            5,
+            0
+          ],
+          "amounts": [
+            "21500.00"
+          ]
+        },
+        {
+          "id": "2026-630",
+          "agenda_page": 2,
+          "state": "approved",
+          "decision_page": 7,
+          "vote": [
+            5,
+            0
+          ],
+          "amounts": [
+            "102971.96"
+          ]
+        },
+        {
+          "id": "2026-639",
+          "agenda_page": 3,
+          "state": "unknown",
+          "amounts": [],
+          "note": "Routine agenda item; item-level vote absent."
+        }
+      ],
+      "sha256": {
+        "agenda": "7ef59b4a44c4ac168f6f5138cad3374408cb940523064606ddbda138cddcd71a",
+        "minutes": "22fc07de9951a493402b5d075ea62ba451063d417461428a63886108ef238155"
+      }
+    }
+  ],
+  "queries": [
+    {
+      "q": "McLeod Street bridge repairs",
+      "expected": "2026-610"
+    },
+    {
+      "q": "Midtown streetscape project",
+      "expected": "2026-641"
+    },
+    {
+      "q": "airport master plan",
+      "expected": "2026-622"
+    },
+    {
+      "q": "land development code CivicPlus",
+      "expected": "2026-535"
+    },
+    {
+      "q": "emergency roof repair",
+      "expected": "2026-592"
+    },
+    {
+      "q": "2026-609",
+      "expected": "2026-609"
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "evaluation": "July 21 and August 4, 2026 \u00b7 Hattiesburg City Council",
+  "sample_label_count": 17,
+  "pdfs_processed": 4,
+  "counts": {
+    "agenda_labels": 17,
+    "agenda_found": 17,
+    "agenda_page_correct": 17,
+    "amount_tp": 9,
+    "amount_fp": 0,
+    "amount_fn": 1,
+    "expected_decisions": 14,
+    "predicted_decisions": 5,
+    "matched_decisions": 5,
+    "vote_correct": 5,
+    "decision_page_correct": 5,
+    "segment_offsets_checked": 44,
+    "segment_offsets_correct": 44
+  },
+  "metrics": {
+    "agenda_item_recall": 1.0,
+    "financial_precision": 1.0,
+    "financial_recall": 0.9,
+    "verified_disposition_precision": 1.0,
+    "verified_disposition_recall": 0.3571,
+    "vote_accuracy_on_verified": 1.0,
+    "agenda_pdf_page_accuracy": 1.0,
+    "decision_pdf_page_accuracy": 1.0,
+    "search_hit_at_1": 1.0,
+    "search_hit_at_5": 1.0
+  },
+  "queries": [
+    {
+      "q": "McLeod Street bridge repairs",
+      "expected": "2026-610",
+      "rank": 1
+    },
+    {
+      "q": "Midtown streetscape project",
+      "expected": "2026-641",
+      "rank": 1
+    },
+    {
+      "q": "airport master plan",
+      "expected": "2026-622",
+      "rank": 1
+    },
+    {
+      "q": "land development code CivicPlus",
+      "expected": "2026-535",
+      "rank": 1
+    },
+    {
+      "q": "emergency roof repair",
+      "expected": "2026-592",
+      "rank": 1
+    },
+    {
+      "q": "2026-609",
+      "expected": "2026-609",
+      "rank": 1
+    }
+  ],
+  "decision_errors": [
+    {
+      "item": "2026-535",
+      "expected": "approved",
+      "observed": "unknown",
+      "note": null
+    },
+    {
+      "item": "2026-615",
+      "expected": "approved",
+      "observed": "unknown",
+      "note": null
+    },
+    {
+      "item": "2026-597",
+      "expected": "approved",
+      "observed": "unknown",
+      "note": null
+    },
+    {
+      "item": "2026-610",
+      "expected": "approved",
+      "observed": "unknown",
+      "note": null
+    },
+    {
+      "item": "2026-635",
+      "expected": "approved",
+      "observed": "unknown",
+      "note": null
+    },
+    {
+      "item": "2026-645",
+      "expected": "approved",
+      "observed": "unknown",
+      "note": null
+    },
+    {
+      "item": "2026-641",
+      "expected": "approved",
+      "observed": "unknown",
+      "note": null
+    },
+    {
+      "item": "2026-622",
+      "expected": "approved",
+      "observed": "unknown",
+      "note": "The minutes text layer reads 2026-621, a different identifier from the agenda."
+    },
+    {
+      "item": "2026-631",
+      "expected": "approved",
+      "observed": "unknown",
+      "note": null
+    }
+  ],
+  "processing_ms": {
+    "per_document": [
+      155,
+      295,
+      81,
+      174
+    ],
+    "median": 164.5
+  },
+  "external_model_cost_usd": 0
+}
