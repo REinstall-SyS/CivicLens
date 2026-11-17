@@ -1,0 +1,102 @@
+x-civic-runtime: &civic-runtime
+  image: civiclens-app:local
+  build:
+    context: .
+    args:
+      PYTHON_EXTRAS: ${PYTHON_EXTRAS:-}
+  environment: &civic-environment
+    DATABASE_URL: postgresql+psycopg://civic:${POSTGRES_PASSWORD:-localcivic}@db:5432/civic
+    DATA_DIR: /app/.data
+    ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+    SECURE_COOKIES: ${SECURE_COOKIES:-false}
+    CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+    EMBEDDING_MODEL: ${EMBEDDING_MODEL:-}
+    LLM_ENDPOINT: ${LLM_ENDPOINT:-}
+    LLM_MODEL: ${LLM_MODEL:-}
+    LLM_API_KEY: ${LLM_API_KEY:-}
+    PREFECT_SERVER_ANALYTICS_ENABLED: "false"
+  volumes:
+    - records:/app/.data
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: civic
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-localcivic}
+      POSTGRES_DB: civic
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U civic -d civic"]
+      interval: 4s
+      timeout: 3s
+      retries: 20
+
+  migrate:
+    <<: *civic-runtime
+    command: ["alembic", "upgrade", "head"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    <<: *civic-runtime
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://127.0.0.1:8000/readyz', timeout=2)"]
+      interval: 8s
+      timeout: 3s
+      retries: 12
+
+  web:
+    build: ./web
+    environment:
+      API_INTERNAL_URL: http://api:8000
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+
+  prefect:
+    <<: *civic-runtime
+    command: ["prefect", "server", "start", "--host", "0.0.0.0"]
+    environment:
+      PREFECT_SERVER_ANALYTICS_ENABLED: "false"
+    volumes:
+      - prefect_data:/home/civic/.prefect
+    ports:
+      - "127.0.0.1:4200:4200"
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://127.0.0.1:4200/api/health', timeout=2)"]
+      interval: 8s
+      timeout: 3s
+      retries: 15
+
+  worker:
+    <<: *civic-runtime
+    command: ["civiclens", "schedule"]
+    environment:
+      <<: *civic-environment
+      PREFECT_API_URL: http://prefect:4200/api
+    depends_on:
+      api:
+        condition: service_healthy
+      prefect:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  records:
+  prefect_data:
