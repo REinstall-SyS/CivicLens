@@ -1,0 +1,74 @@
+name: CivicLens CI
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: civic
+          POSTGRES_PASSWORD: localcivic
+          POSTGRES_DB: civic
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U civic -d civic"
+          --health-interval 5s --health-timeout 3s --health-retries 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: sudo apt-get update && sudo apt-get install -y tesseract-ocr tesseract-ocr-eng
+      - run: python -m pip install -e ".[test]"
+      - run: python -m pytest -q
+        env:
+          TESSDATA_PREFIX: /usr/share/tesseract-ocr/5/tessdata
+          CIVICLENS_PG_TEST_URL: postgresql+psycopg://civic:localcivic@127.0.0.1:5432/civic
+
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: python -m pip install -e ".[test]"
+      - run: alembic upgrade head
+      - run: civiclens bootstrap
+        env:
+          PREFECT_SERVER_ANALYTICS_ENABLED: "false"
+      - run: npm ci --prefix web
+      - run: npm run build --prefix web
+      - working-directory: web
+        run: npx playwright install --with-deps chromium
+      - run: |
+          uvicorn civiclens.api:app --host 127.0.0.1 --port 8000 > /tmp/civiclens-api.log 2>&1 &
+          npm run start --prefix web -- --hostname 127.0.0.1 > /tmp/civiclens-web.log 2>&1 &
+          for url in http://127.0.0.1:8000/readyz http://127.0.0.1:3000; do
+            curl --retry 35 --retry-connrefused --retry-delay 1 --fail --silent "$url" > /dev/null
+          done
+          npm run test:e2e --prefix web
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: browser-debug
+          path: |
+            /tmp/civiclens-api.log
+            /tmp/civiclens-web.log
+            web/test-results
